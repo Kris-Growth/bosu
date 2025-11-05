@@ -1,5 +1,5 @@
 /**
- * Parser pro data ze Svaly.md
+ * Parser pro data ze Svaly.md a Svaly_list.md
  * Parsuje markdown soubor a extrahuje informace o svalech
  */
 
@@ -11,6 +11,113 @@ export interface Muscle {
   origin: string; // Začátek
   insertion: string; // Úpon
   function: string; // Funkce
+  imageUrl?: string; // Volitelná cesta k obrázku svalu
+}
+
+/**
+ * Parsuje markdown tabulku s daty o svalech
+ * Formát: | Svalová skupina | Sval | Latinský název | Začátek | Úpon | Funkce |
+ */
+export function parseMusclesFromMarkdownTable(content: string): Muscle[] {
+  const muscles: Muscle[] = [];
+  const lines = content.split('\n');
+  
+  // Najít hlavičku tabulky
+  let headerLineIndex = -1;
+  let headerColumns: string[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('|') && line.includes('Svalová skupina')) {
+      headerLineIndex = i;
+      // Parsovat hlavičku - použít stejnou logiku jako u datových řádků
+      const rawCells = line.split('|');
+      headerColumns = rawCells.slice(1, -1).map(c => c.trim());
+      break;
+    }
+  }
+  
+  if (headerLineIndex === -1) {
+    return []; // Není tabulka
+  }
+  
+  // Najít indexy sloupců
+  const groupIndex = headerColumns.findIndex(col => 
+    col.toLowerCase().includes('skupina') || col.toLowerCase().includes('svalová')
+  );
+  const nameIndex = headerColumns.findIndex(col => 
+    col.toLowerCase() === 'sval'
+  );
+  const latinIndex = headerColumns.findIndex(col => 
+    col.toLowerCase().includes('latinský') || col.toLowerCase().includes('latinsky')
+  );
+  const originIndex = headerColumns.findIndex(col => 
+    col.toLowerCase() === 'začátek'
+  );
+  const insertionIndex = headerColumns.findIndex(col => 
+    col.toLowerCase() === 'úpon'
+  );
+  const functionIndex = headerColumns.findIndex(col => 
+    col.toLowerCase() === 'funkce'
+  );
+  
+  // Parsovat řádky dat (přeskočit hlavičku a separator)
+  for (let i = headerLineIndex + 2; i < lines.length; i++) {
+    const line = lines[i].trim();
+    
+    // Přeskočit prázdné řádky a separátory
+    if (!line || line.match(/^\|[\-\s:]+\|/)) {
+      continue;
+    }
+    
+    if (!line.startsWith('|')) {
+      continue;
+    }
+    
+    // Parsovat buňky - split na | a odstranit prázdné hodnoty na začátku/konci
+    const rawCells = line.split('|');
+    // Odstranit první a poslední prázdný element (kvůli | na začátku a konci)
+    const cells = rawCells.slice(1, -1).map(c => c.trim());
+    
+    // Pokud máme méně buněk než očekáváme, přeskočit
+    const maxIndex = Math.max(
+      groupIndex >= 0 ? groupIndex : -1,
+      nameIndex >= 0 ? nameIndex : -1,
+      latinIndex >= 0 ? latinIndex : -1,
+      originIndex >= 0 ? originIndex : -1,
+      insertionIndex >= 0 ? insertionIndex : -1,
+      functionIndex >= 0 ? functionIndex : -1
+    );
+    
+    if (cells.length <= maxIndex) {
+      continue;
+    }
+    
+    const group = groupIndex >= 0 && cells[groupIndex] ? cells[groupIndex] : '';
+    const name = nameIndex >= 0 && cells[nameIndex] ? cells[nameIndex] : '';
+    const latinName = latinIndex >= 0 && cells[latinIndex] ? cells[latinIndex] : '';
+    const origin = originIndex >= 0 && cells[originIndex] ? cells[originIndex] : '';
+    const insertion = insertionIndex >= 0 && cells[insertionIndex] ? cells[insertionIndex] : '';
+    const func = functionIndex >= 0 && cells[functionIndex] ? cells[functionIndex] : '';
+    
+    // Přeskočit prázdné řádky nebo duplikáty hlavičky
+    if (!name || name.toLowerCase() === 'sval' || name === '---') {
+      continue;
+    }
+    
+    // Vytvořit sval - nahradit prázdné hodnoty nebo "-" za prázdný string
+    muscles.push({
+      id: `muscle-${muscles.length + 1}`,
+      name: name.trim(),
+      latinName: (latinName.trim() === '-' ? '' : latinName.trim()),
+      group: group.trim(),
+      origin: (origin.trim() === '-' ? '' : origin.trim()),
+      insertion: (insertion.trim() === '-' ? '' : insertion.trim()),
+      function: (func.trim() === '-' ? '' : func.trim()),
+    });
+  }
+  
+  return muscles;
 }
 
 export function parseMusclesFromMarkdown(content: string): Muscle[] {

@@ -1,0 +1,13 @@
+# Složka pro obrázky svalů
+# Obrázky by měly být pojmenovány podle názvu svalu (normalizovaného):
+# - malá písmena
+# - bez diakritiky
+# - mezery nahrazené pomlčkami
+# - např. "Sval deltový" -> "sval-deltovy.jpg"
+
+# Příklad názvů souborů:
+# - sval-deltovy.jpg
+# - sval-poloslachovity.jpg
+# - sval-trapezovy.jpg
+# atd.
+

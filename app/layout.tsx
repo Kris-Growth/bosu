@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Musle Up - Kvízová hra pro učení svalů",
+  title: "Fit-Praha-Kviz - Kvízová hra pro učení svalů",
   description: "Zábavná kvízová hra pro učení svalových partií, jejich cviků, latinských názvů, úponů a začátků",
 };
 

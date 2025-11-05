@@ -27,8 +27,15 @@ export interface QuizState {
 export interface QuizStats {
   totalQuestions: number;
   correctAnswers: number;
+  wrongAnswers: number;
+  currentQuestionIndex: number;
   streak: number;
   accuracy: number;
+}
+
+export interface QuizSettings {
+  enabledTypes: QuestionType[];
+  questionsPerMuscle: number;
 }
 
 /**
@@ -38,7 +45,7 @@ export function generateQuestion(
   muscle: Muscle,
   allMuscles: Muscle[],
   questionType: QuestionType
-): QuizQuestion {
+): QuizQuestion | null {
   const questionId = `${muscle.id}-${questionType}-${Date.now()}`;
   
   let question: string;
@@ -47,6 +54,10 @@ export function generateQuestion(
   
   switch (questionType) {
     case 'origin':
+      // Pokud má sval prázdný začátek, vrať null
+      if (!muscle.origin || muscle.origin.trim() === '' || muscle.origin === '-') {
+        return null;
+      }
       question = `Jaký je začátek svalu "${muscle.name}"?`;
       correctAnswer = muscle.origin;
       // Generovat možnosti z jiných svalů
@@ -59,6 +70,10 @@ export function generateQuestion(
       break;
       
     case 'insertion':
+      // Pokud má sval prázdný úpon, vrať null
+      if (!muscle.insertion || muscle.insertion.trim() === '' || muscle.insertion === '-') {
+        return null;
+      }
       question = `Jaký je úpon svalu "${muscle.name}"?`;
       correctAnswer = muscle.insertion;
       options = generateOptions(
@@ -70,6 +85,10 @@ export function generateQuestion(
       break;
       
     case 'function':
+      // Pokud má sval prázdnou funkci, vrať null
+      if (!muscle.function || muscle.function.trim() === '' || muscle.function === '-') {
+        return null;
+      }
       question = `Jaká je funkce svalu "${muscle.name}"?`;
       correctAnswer = muscle.function;
       options = generateOptions(
@@ -81,6 +100,10 @@ export function generateQuestion(
       break;
       
     case 'name':
+      // Pro name musíme zkontrolovat origin
+      if (!muscle.origin || muscle.origin.trim() === '' || muscle.origin === '-') {
+        return null;
+      }
       question = `Který sval má začátek "${muscle.origin.substring(0, 50)}..."?`;
       correctAnswer = muscle.name;
       options = generateOptions(
@@ -92,6 +115,10 @@ export function generateQuestion(
       break;
       
     case 'latinName':
+      // Pokud má sval prázdný latinský název, vrať null
+      if (!muscle.latinName || muscle.latinName.trim() === '' || muscle.latinName === '-') {
+        return null;
+      }
       question = `Jaký je latinský název svalu "${muscle.name}"?`;
       correctAnswer = muscle.latinName;
       options = generateOptions(
@@ -150,22 +177,29 @@ function shuffleArray<T>(array: T[]): T[] {
  */
 export function generateQuiz(
   muscles: Muscle[],
-  questionsPerMuscle: number = 3
+  questionsPerMuscle: number = 3,
+  enabledTypes: QuestionType[] = ['origin', 'insertion', 'function', 'latinName']
 ): QuizQuestion[] {
   const questions: QuizQuestion[] = [];
   
-  // Rozšířené typy otázek včetně latinského názvu
-  const allQuestionTypes: QuestionType[] = ['origin', 'insertion', 'function', 'latinName'];
+  // Pokud nejsou žádné povolené typy, použij všechny
+  const availableTypes = enabledTypes.length > 0 
+    ? enabledTypes 
+    : ['origin', 'insertion', 'function', 'latinName'];
   
   for (const muscle of muscles) {
-    // Vybrat náhodné typy otázek
-    const selectedTypes = shuffleArray([...allQuestionTypes]).slice(
+    // Vybrat náhodné typy otázek z povolených
+    const selectedTypes = shuffleArray([...availableTypes]).slice(
       0,
-      Math.min(questionsPerMuscle, allQuestionTypes.length)
-    );
+      Math.min(questionsPerMuscle, availableTypes.length)
+    ) as QuestionType[];
     
     for (const type of selectedTypes) {
-      questions.push(generateQuestion(muscle, muscles, type));
+      const question = generateQuestion(muscle, muscles, type);
+      // Přidat pouze pokud otázka není null (má platnou hodnotu)
+      if (question) {
+        questions.push(question);
+      }
     }
   }
   

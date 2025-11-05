@@ -1,8 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Trophy, Flame, Target } from "lucide-react";
+import { Flame, HelpCircle, CheckCircle2, XCircle } from "lucide-react";
 import { QuizStats as QuizStatsType } from "@/lib/quiz-types";
 
 interface QuizStatsProps {
@@ -15,31 +14,36 @@ export function QuizStats({ stats }: QuizStatsProps) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Target className="h-4 w-4" />
-            Přesnost
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <XCircle className="h-4 w-4 text-red-600" />
+            Dobře / špatně
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {Math.round(stats.accuracy)}%
+            <span className="text-green-600">{stats.correctAnswers}</span>
+            {" / "}
+            <span className="text-red-600">{stats.wrongAnswers}</span>
           </div>
-          <Progress value={stats.accuracy} className="mt-2" />
+          <p className="text-xs text-muted-foreground mt-1">
+            Zodpovězené
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
-            Skóre
+            <HelpCircle className="h-4 w-4" />
+            Otázky
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {stats.correctAnswers} / {stats.totalQuestions}
+            {stats.currentQuestionIndex + 1} / {stats.totalQuestions}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Správných odpovědí
+            otázek
           </p>
         </CardContent>
       </Card>
