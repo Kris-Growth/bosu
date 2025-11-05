@@ -46,7 +46,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 py-8">
       <div className="w-full max-w-6xl mx-auto px-4">
-        <div className="flex items-start justify-between mb-8">
+        {/* Header - na desktopu vedle sebe, na mobilu pod sebou */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-bold text-black mb-2">
               Fit-Praha-Kviz
@@ -55,14 +56,14 @@ export default function Home() {
               Kvízová hra pro učení svalových partií
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowEncyclopedia(true)}
               className="flex items-center gap-2"
             >
-              <span className="hidden sm:inline">Encyklopedie</span>
+              <span>Encyklopedie</span>
             </Button>
             <Button
               variant="outline"
@@ -70,7 +71,7 @@ export default function Home() {
               onClick={() => setShowDictionary(true)}
               className="flex items-center gap-2"
             >
-              <span className="hidden sm:inline">Slovník slov</span>
+              <span>Slovník slov</span>
             </Button>
             <Button
               variant="outline"
@@ -79,7 +80,7 @@ export default function Home() {
               className="flex items-center gap-2"
             >
               <span className="text-sm font-medium">{selectedCount}/{totalCount}</span>
-              <span className="hidden sm:inline">Typy otázek</span>
+              <span>Typy otázek</span>
             </Button>
           </div>
         </div>
