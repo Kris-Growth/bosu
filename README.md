@@ -1,4 +1,4 @@
-# Musle Up - Kvízová hra pro učení svalů
+# Fit-Praha-Kviz - Kvízová hra pro učení svalů
 
 Zábavná kvízová aplikace pro učení svalových partií, jejich cviků, latinských názvů, úponů a začátků.
 
