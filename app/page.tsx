@@ -1,20 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { QuizGame } from "@/components/quiz/QuizGame";
 import { AIQuizGame } from "@/components/quiz/AIQuizGame";
 import { Encyclopedia } from "@/components/quiz/Encyclopedia";
 import { Dictionary } from "@/components/quiz/Dictionary";
 import { Button } from "@/components/ui/button";
 import { loadSettings } from "@/lib/quiz-settings";
-import { QuizSettings } from "@/lib/quiz-types";
 import { ExamCountdown } from "@/components/ExamCountdown";
-import { ListChecks, Brain } from "lucide-react";
-
-type QuizMode = "multiple-choice" | "ai-text";
 
 export default function Home() {
-  const [quizMode, setQuizMode] = useState<QuizMode>("multiple-choice");
   const [showSettingsFromHeader, setShowSettingsFromHeader] = useState(false);
   const [showEncyclopedia, setShowEncyclopedia] = useState(false);
   const [showDictionary, setShowDictionary] = useState(false);
@@ -91,47 +85,12 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        
-        {/* Tabs pro přepínání mezi režimy */}
-        <div className="mb-6 border-b border-gray-200">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setQuizMode("multiple-choice")}
-              className={`px-4 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
-                quizMode === "multiple-choice"
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <ListChecks className="h-4 w-4" />
-              <span>Lehký Kvíz</span>
-            </button>
-            <button
-              onClick={() => setQuizMode("ai-text")}
-              className={`px-4 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
-                quizMode === "ai-text"
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Brain className="h-4 w-4" />
-              <span>Těžký Kvíz</span>
-            </button>
-          </div>
-        </div>
 
-        {/* Zobrazení příslušného režimu kvízu */}
-        {quizMode === "multiple-choice" ? (
-          <QuizGame
-            externalShowSettings={showSettingsFromHeader}
-            onExternalSettingsClose={() => setShowSettingsFromHeader(false)}
-          />
-        ) : (
-          <AIQuizGame
-            externalShowSettings={showSettingsFromHeader}
-            onExternalSettingsClose={() => setShowSettingsFromHeader(false)}
-          />
-        )}
+        {/* AI Kvíz */}
+        <AIQuizGame
+          externalShowSettings={showSettingsFromHeader}
+          onExternalSettingsClose={() => setShowSettingsFromHeader(false)}
+        />
       </div>
       
       {showEncyclopedia && (
