@@ -8,6 +8,8 @@ import { Dictionary } from "@/components/quiz/Dictionary";
 import { Button } from "@/components/ui/button";
 import { loadSettings } from "@/lib/quiz-settings";
 import { QuizSettings } from "@/lib/quiz-types";
+import { ExamCountdown } from "@/components/ExamCountdown";
+import { ListChecks, Brain } from "lucide-react";
 
 type QuizMode = "multiple-choice" | "ai-text";
 
@@ -61,6 +63,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            <ExamCountdown />
             <Button
               variant="outline"
               size="sm"
@@ -94,23 +97,25 @@ export default function Home() {
           <div className="flex gap-2">
             <button
               onClick={() => setQuizMode("multiple-choice")}
-              className={`px-4 py-2 font-medium text-sm transition-colors ${
+              className={`px-4 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
                 quizMode === "multiple-choice"
                   ? "border-b-2 border-blue-500 text-blue-600"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              Kvíz (výběr z možností)
+              <ListChecks className="h-4 w-4" />
+              <span>Lehký Kvíz</span>
             </button>
             <button
               onClick={() => setQuizMode("ai-text")}
-              className={`px-4 py-2 font-medium text-sm transition-colors ${
+              className={`px-4 py-2 font-medium text-sm transition-colors flex items-center gap-2 ${
                 quizMode === "ai-text"
                   ? "border-b-2 border-blue-500 text-blue-600"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              Kvíz (volný text + AI)
+              <Brain className="h-4 w-4" />
+              <span>Těžký Kvíz</span>
             </button>
           </div>
         </div>
