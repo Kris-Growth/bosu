@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY environment variable is not set');
+  }
+  return new OpenAI({
+    apiKey: apiKey,
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +21,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Inicializovat OpenAI klienta až při runtime
+    const openai = getOpenAIClient();
 
     const systemPrompt = `Jsi odborný asistent pro vyhodnocování odpovědí v kvízu o anatomii svalů. 
 Tvá úloha je vyhodnotit, zda je odpověď uživatele správná ve vztahu k referenční odpovědi z databáze.
